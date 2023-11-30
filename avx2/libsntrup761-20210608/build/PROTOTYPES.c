@@ -1,0 +1,17 @@
+extern int crypto_verify(const unsigned char *,const unsigned char *);
+extern void crypto_decode(void *,const unsigned char *);
+extern void crypto_encode(unsigned char *,const void *);
+extern int crypto_core(unsigned char *,const unsigned char *,const unsigned char *,const unsigned char *);
+extern int crypto_hashblocks(unsigned char *,const unsigned char *,unsigned long long);
+extern int crypto_hash(unsigned char *,const unsigned char *,unsigned long long);
+extern int crypto_stream(unsigned char *,unsigned long long,const unsigned char *,const unsigned char *);
+extern int crypto_stream_xor(unsigned char *,const unsigned char *,unsigned long long,const unsigned char *,const unsigned char *);
+extern int crypto_stream_beforenm(unsigned char *,const unsigned char *);
+extern int crypto_stream_afternm(unsigned char *,unsigned long long,const unsigned char *,const unsigned char *);
+extern int crypto_stream_xor_afternm(unsigned char *,const unsigned char *,unsigned long long,const unsigned char *,const unsigned char *);
+extern int crypto_rng(unsigned char *,unsigned char *,const unsigned char *);
+extern int crypto_kem_keypair(unsigned char *,unsigned char *) __attribute__((visibility("default")));
+extern int crypto_kem_keypair_batch(unsigned char *pk,unsigned char *sk, unsigned num) __attribute__((visibility("default")));
+extern int crypto_kem_enc(unsigned char *,unsigned char *,const unsigned char *) __attribute__((visibility("default")));
+extern int crypto_kem_dec(unsigned char *,const unsigned char *,const unsigned char *) __attribute__((visibility("default")));
+extern void crypto_sort(void *,long long);

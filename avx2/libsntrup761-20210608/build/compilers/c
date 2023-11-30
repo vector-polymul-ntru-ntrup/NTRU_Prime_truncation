@@ -1,0 +1,18 @@
+gcc -fPIC -Wall -march=haswell -maes -mtune=haswell -O3 -fomit-frame-pointer -fwrapv
+gcc -fPIC -Wall -march=haswell -maes -mtune=haswell -O2 -fomit-frame-pointer -fwrapv
+clang -fPIC -Wall -march=haswell -maes -mtune=haswell -O3 -fomit-frame-pointer -fwrapv
+clang -fPIC -Wall -march=haswell -maes -mtune=haswell -O2 -fomit-frame-pointer -fwrapv
+gcc -fPIC -Wall -march=native -mtune=native -O3 -fomit-frame-pointer -fwrapv
+gcc -fPIC -Wall -march=native -mtune=native -O2 -fomit-frame-pointer -fwrapv
+clang -fPIC -Wall -march=native -mtune=native -O3 -fomit-frame-pointer -fwrapv
+clang -fPIC -Wall -march=native -mtune=native -O2 -fomit-frame-pointer -fwrapv
+
+clang-11 -fPIC -Wall -march=haswell -maes -mtune=haswell -O3 -fomit-frame-pointer -fwrapv
+clang-11 -fPIC -Wall -march=haswell -maes -mtune=haswell -O2 -fomit-frame-pointer -fwrapv
+clang-11 -fPIC -Wall -march=native -mtune=native -O3 -fomit-frame-pointer -fwrapv
+clang-11 -fPIC -Wall -march=native -mtune=native -O2 -fomit-frame-pointer -fwrapv
+
+gcc-12 -fPIC -Wall -march=haswell -maes -mtune=haswell -O3 -fomit-frame-pointer -fwrapv
+gcc-12 -fPIC -Wall -march=haswell -maes -mtune=haswell -O2 -fomit-frame-pointer -fwrapv
+gcc-12 -fPIC -Wall -march=native -mtune=native -O3 -fomit-frame-pointer -fwrapv
+gcc-12 -fPIC -Wall -march=native -mtune=native -O2 -fomit-frame-pointer -fwrapv
