@@ -30,11 +30,15 @@ Author: [Vincent Hwang](https://vincentvbh.github.io/) `<vincentvbh7@gmail.com>`
 - A hardware supporting Intel AVX2.
 
 # Structure of This Artifact
-- `avx2`
-- `C`
+- `avx2`: AVX2 implementation.
+- `C`: C implementation.
 - `common`: File involved during the development.
-- `neon`
+- `neon`: Neon implementation.
 
 # How to Test for Correctness
 
+TBA
+
 # How to Benchmark
+
+TBA

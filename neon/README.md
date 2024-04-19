@@ -1,6 +1,6 @@
 
 # Structure of This Folder
 
-- `neon`:
-- `neon_bench`:
+- `neon`: Neon polynomial multiplier.
+- `neon_bench`: Benchmarking the Neon polynomial multiplier.
 - `neon_scheme`:
