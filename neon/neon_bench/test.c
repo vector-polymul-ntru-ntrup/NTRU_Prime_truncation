@@ -55,9 +55,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < 1536; i++){
-        if(ref[i] != res[i]){
-            printf("%4zu: %8d, %8d\n", i, ref[i], res[i]);
-        }
+        assert(ref[i] == res[i])
     }
 
     printf("mulcore finished!\n");
@@ -75,9 +73,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < p; i++){
-        if(ref[i] != res[i]){
-            printf("%4zu: %8d, %8d\n", i, ref[i], res[i]);
-        }
+        assert(ref[i] == res[i])
     }
 
 

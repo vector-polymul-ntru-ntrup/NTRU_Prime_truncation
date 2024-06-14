@@ -68,9 +68,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < NTT_N; i++){
-        if(ref[i] != res[i]){
-            printf("%4zu: %8d, %8d\n", i, ref[i], res[i]);
-        }
+        assert(ref[i] == res[i])
     }
 
     printf("mulcore finished!\n");
@@ -89,9 +87,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < p; i++){
-        if(ref[i] != res[i]){
-            printf("%4zu: %12d, %12d\n", i, ref[i], res[i]);
-        }
+        assert(ref[i] == res[i])
     }
 
     printf("polymul finished!\n");

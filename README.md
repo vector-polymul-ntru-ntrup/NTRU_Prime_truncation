@@ -13,11 +13,11 @@ Author: [Vincent Hwang](https://vincentvbh.github.io/) `<vincentvbh7@gmail.com>`
 - NTRU Prime
     - `sntrup761`
 
-## Architecture
+## Architectures
 - Armv8-A for Neon
 - Haswell or Skylake for AVX2
 
-## Benchmarking Platform
+## Benchmarking Platforms
 - Neon
     - Cortex-A72
     - Apple M1 Pro
@@ -37,8 +37,14 @@ Author: [Vincent Hwang](https://vincentvbh.github.io/) `<vincentvbh7@gmail.com>`
 
 # How to Test for Correctness
 
-TBA
+Please refer to
+- `neon/README.md`
+- `avx2/README.md`
 
 # How to Benchmark
 
-TBA
+Please refer to
+- `neon/README.md`
+- `avx2/README.md`
+
+
