@@ -55,7 +55,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < 1536; i++){
-        assert(ref[i] == res[i])
+        assert(ref[i] == res[i]);
     }
 
     printf("mulcore finished!\n");
@@ -73,7 +73,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < p; i++){
-        assert(ref[i] == res[i])
+        assert(ref[i] == res[i]);
     }
 
 

@@ -123,7 +123,7 @@ int main(void){
     int16_t poly1_NTT[ARRAY_N], poly2_NTT[ARRAY_N];
     int16_t ref[ARRAY_N], res[ARRAY_N];
     int16_t res_NTT[ARRAY_N];
-    int16_t twiddle, t, scale, omega;
+    int16_t twiddle, t, scale;
 
     for(size_t i = 0; i < NTRU_P; i++){
         t = rand() % Q;

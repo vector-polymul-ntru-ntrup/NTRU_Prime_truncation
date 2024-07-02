@@ -46,7 +46,7 @@ int main(void){
 
     int16_t twiddle17[17];
     int16_t twist[16 * 96];
-    int16_t twiddle, t, scale, omega;
+    int16_t twiddle, t, omega;
 
     omega = OMEGA17;
     getExpVec(twiddle17, omega, 17);

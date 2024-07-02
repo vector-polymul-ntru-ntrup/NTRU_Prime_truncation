@@ -78,7 +78,7 @@ static int cmp_uint64(const void *a, const void *b){
 
 
 
-int main()
+int main(void)
 {
     unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0};
     unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0};

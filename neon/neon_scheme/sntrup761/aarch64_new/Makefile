@@ -43,7 +43,6 @@ C_SOURCES = Decode.c Encode.c kem.c sntrup_core.c hash.c \
 HEADERS = $(HASH_HEADERS) $(SORT_HEADERS) $(RAND_HEADERS) $(ASM_HEADERS) $(C_HEADERS)
 SOURCES = $(HASH_SOURCES) $(SORT_SOURCES) $(RAND_SOURCES) $(ASM_SOURCES) $(C_SOURCES)
 
-
 all: test testvectors
 
 test: $(HEADERS) $(SOURCES) test.c
