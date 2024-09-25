@@ -127,7 +127,7 @@ int main(void){
     int16_t twist[16 * 96];
     int16_t twist_extended[2 * 16 * 96];
     int16_t buff16[16];
-    int16_t twiddle, t, scale, omega;
+    int16_t twiddle, t, omega;
 
 // ================
 

@@ -41,7 +41,6 @@ microbench: microbench.c $(HEADERs) $(SOURCEs)
 .PHONY: clean
 clean:
 	rm -f test
-	rm -f unit_test
 	rm -f bench_mulcore
 	rm -f bench_polymul
 	rm -f microbench

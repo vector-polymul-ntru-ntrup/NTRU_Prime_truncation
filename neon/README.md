@@ -9,11 +9,18 @@
 
 ## Polynomial Multiplier
 
-Go to the folder `neon_bench`, type `make`, and type `./test`.
-If you see the following then the polynomial multiplications are correct.
+Go to the folder `neon_bench`.
+
+Type `make test` to produce the binary `test`, and type `./test` to execute it.
+Sample output:
 ```
 mulcore finished!
 polymul finished!
+```
+
+Type `make gen` to produce the binary `gen`, and type `./gen` to execute it.
+```
+gen finished!
 ```
 
 ## Scheme
