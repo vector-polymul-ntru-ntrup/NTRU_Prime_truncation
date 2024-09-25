@@ -1,7 +1,7 @@
 
 CC = gcc
 
-CFLAGS += -mcpu=native -mtune=native -O3 -Wall -mavx2 -z noexecstack -Wno-unused-command-line-argument
+CFLAGS += -mcpu=native -mtune=native -O3 -Wall -mavx2 -z noexecstack
 
 COMMON_PATH = ../../common
 
@@ -26,8 +26,8 @@ bench: bench_mulcore bench_polymul microbench
 test: test.c $(HEADERs) $(SOURCEs)
 	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
 
-gen: gen.c $(HEADERs) $(SOURCEs)
-	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
+gen: gen.c $(HEADERs) gen_const.h $(SOURCEs)
+	$(CC) $(CFLAGS) $(SOURCEs) gen_const.c -o $@ $(addsuffix .c, $@)
 
 bench_mulcore: bench_mulcore.c $(HEADERs) $(SOURCEs)
 	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)

@@ -12,8 +12,6 @@
 
 #include "ring.h"
 
-#include "rader.h"
-
 #include "__avx2_wrap.h"
 #include "__avx2.h"
 
@@ -68,7 +66,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < NTT_N; i++){
-        assert(ref[i] == res[i])
+        assert(ref[i] == res[i]);
     }
 
     printf("mulcore finished!\n");
@@ -87,7 +85,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < p; i++){
-        assert(ref[i] == res[i])
+        assert(ref[i] == res[i]);
     }
 
     printf("polymul finished!\n");

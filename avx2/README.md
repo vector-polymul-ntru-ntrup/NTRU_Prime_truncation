@@ -8,8 +8,48 @@
 
 # How to Test for Correctness
 
-TBA
+## Polynomial Multiplication
+Go to the folder `avx2_bench`.
+
+### Polynomial Multiplication
+Type `make test` to produce the binary file `test`, and execute it as follows:
+```
+./test
+```
+Sample output:
+```
+mulcore finished!
+polymul finished!
+```
+
+### Twiddle Factor Generation
+Type `make gen`
+
+
+## Batch Key Generation
+
+Please follow the instructions in `libsntrup761-20210608/README.md`.
+We integrated our multiplier to this folder.
+
+## Encapsulation and Decapsulation
+
+Please uncompress `supercop-20230530_new.tar.gz` and follow the instructions there.
+We integrated our multiplier to this package.
 
 # How to Benchmark
 
+## Polynomial Multiplication
+Go to the folder `avx2_bench`.
+
 TBA
+
+## Batch Key Generation
+
+Please follow the instructions in `libsntrup761-20210608/README.md`.
+We integrated our multiplier to this folder.
+
+## Encapsulation and Decapsulation
+
+Please uncompress `supercop-20230530_new.tar.gz` and follow the instructions there.
+We integrated our multiplier to this package.
+

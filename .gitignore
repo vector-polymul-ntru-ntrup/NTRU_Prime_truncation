@@ -1,4 +1,11 @@
 
+**/test
+**/bench
+**/gen
+**/speed
+**/testvectors
+**/microbench
+
 __pycache__
 **/.DS_Store
 

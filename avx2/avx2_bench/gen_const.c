@@ -1,4 +1,15 @@
 
+#include "gen_const.h"
+#include "NTT_params.h"
+
+// // map x to log_g (x + 1)
+size_t rader_dlog_permute[16] = {
+0, 14, 1, 12,
+5, 15, 11, 10,
+2, 3, 7, 13,
+4, 9, 6, 8
+};
+
 int16_t twiddle_rader17[17] = {
 1, 1152, 305, -2147, 1205, 1678, 245, 2189, 1269, 1950, 1401, -2080, 342, -842, -1283, 286, -1080
 };

@@ -12,8 +12,10 @@
 
 #include "ring.h"
 
-#include "rader.h"
 #include "__avx2.h"
+#include "__avx2_const.h"
+
+#include "gen_const.h"
 
 int16_t twist[NTT_N];
 

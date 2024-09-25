@@ -87,24 +87,12 @@ and typing `./microbench` reports the performance of each of the components.
 
 #### Cortex-A72
 
-Old:
-```
-
-```
-
-New:
 ```
 
 ```
 
 #### Apple M1 Pro
 
-Old:
-```
-
-```
-
-New:
 ```
 mulcore: 6519
 polymul: 6727
