@@ -1,7 +1,7 @@
 
 CC = gcc
 
-CFLAGS += -mcpu=native -mtune=native -march=native -O3 -Wall
+CFLAGS += -mtune=native -mcpu=native -O3 -Wall
 
 COMMON_PATH = ../common
 
