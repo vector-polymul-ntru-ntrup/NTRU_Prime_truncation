@@ -1,15 +1,17 @@
 
+#include <memory.h>
+#include <sys/types.h>
+
 #include "tools.h"
 #include "ntt_c.h"
 
 // ================================
-// Cooley-Tukey butterfly
-
+// Cooley-Tukey butterfly.
 void CT_butterfly(
     void *src,
     size_t indx_a, size_t indx_b,
     void *twiddle,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char tmp[ring.sizeZ];
@@ -21,13 +23,12 @@ void CT_butterfly(
 }
 
 // ================================
-// Gentleman-Sande butterfly
-
+// Gentleman-Sande butterfly.
 void GS_butterfly(
     void *src,
     size_t indx_a, size_t indx_b,
     void *twiddle,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char tmp[ring.sizeZ];
@@ -39,13 +40,128 @@ void GS_butterfly(
 }
 
 // ================================
-// multi-layer Cooley-Tukey butterfly for the forward transformation
+void CT_NTT_core(
+    void *src,
+    size_t level,
+    void *_root_table,
+    struct compress_profile _profile,
+    struct ring ring
+    ){
 
+    size_t step;
+    void *real_root_table;
+
+    step = (_profile.array_n) >> (level + 1);
+    real_root_table = _root_table + ((1u << level) - 1) * ring.sizeZ;
+
+    for(size_t i = 0; i < _profile.array_n; i += 2 * step){
+        for(size_t j = 0; j < step; j++){
+            CT_butterfly(src + (i + j) * ring.sizeZ, 0, step, real_root_table, ring);
+        }
+        real_root_table += ring.sizeZ;
+    }
+
+}
+
+// ================================
+void CT_iNTT_core(
+    void *src,
+    size_t level,
+    void *_root_table,
+    struct compress_profile _profile,
+    struct ring ring
+    ){
+
+    size_t step;
+    void *real_root_table;
+
+    step = 1u << level;
+    real_root_table = _root_table + ((1u << level) - 1) * ring.sizeZ;
+
+    for(size_t i = 0; i < step; i++){
+        for(size_t j = 0; j < _profile.array_n; j += 2 * step){
+            CT_butterfly(src + (i + j) * ring.sizeZ, 0, step, real_root_table, ring);
+        }
+        real_root_table += ring.sizeZ;
+    }
+
+}
+
+// ================================
+void GS_iNTT_core(
+    void *src,
+    size_t level,
+    void *_root_table,
+    struct compress_profile _profile,
+    struct ring ring
+    ){
+
+    size_t step;
+    void *real_root_table;
+
+    step = (_profile.array_n) >> (level + 1);
+    real_root_table = _root_table + ((1U << level) - 1) * ring.sizeZ;
+
+    for(size_t i = 0; i < _profile.array_n; i += 2 * step){
+        for(size_t j = 0; j < step; j++){
+            GS_butterfly(src + (i + j) * ring.sizeZ, 0, step, real_root_table, ring);
+        }
+        real_root_table += ring.sizeZ;
+    }
+
+}
+
+// ================================
+void CT_NTT(
+    void *src,
+    void *_root_table,
+    struct compress_profile _profile,
+    struct ring ring
+    ){
+
+    for(size_t i = 0; i < _profile.log_ntt_n; i++){
+        CT_NTT_core(src, i, _root_table, _profile, ring);
+    }
+
+}
+
+// ================================
+void CT_iNTT(
+    void *src,
+    void *_root_table,
+    struct compress_profile _profile,
+    struct ring ring
+    ){
+
+    for(size_t i = 0; i < _profile.log_ntt_n; i++){
+        CT_iNTT_core(src, i, _root_table, _profile, ring);
+    }
+
+}
+
+// ================================
+void GS_iNTT(
+    void *src,
+    void *_root_table,
+    struct compress_profile _profile,
+    struct ring ring
+    ){
+
+    for(ssize_t i = _profile.log_ntt_n - 1; i >= 0; i--){
+        GS_iNTT_core(src, i, _root_table, _profile, ring);
+    }
+
+}
+
+// ================================
+
+// ================================
+// Multi-layer Cooley-Tukey butterfly for the forward transformation.
 void m_layer_CT_butterfly(
     void *src,
     size_t layers, size_t step,
     void *_root_table,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t real_count, real_step, twiddle_count, jump;
@@ -53,13 +169,13 @@ void m_layer_CT_butterfly(
 
     for(size_t i = 0; i < layers; i++){
 
-        twiddle_count = 1 << i;
+        twiddle_count = 1u << i;
 
-        real_count = 1 << (layers - 1 - i);
+        real_count = 1u << (layers - 1 - i);
 
         jump = step << (layers - i);
 
-        real_root_table = _root_table + ((1 << i) - 1) * ring.sizeZ;
+        real_root_table = _root_table + ((1u << i) - 1) * ring.sizeZ;
 
         real_step = step << (layers - 1 - i);
 
@@ -79,13 +195,12 @@ void m_layer_CT_butterfly(
 }
 
 // ================================
-// multi-layer Cooley-Tukey butterfly for the inverse transformation
-
+// Multi-layer Cooley-Tukey butterfly for the inverse transformation.
 void m_layer_CT_ibutterfly(
     void *src,
     size_t layers, size_t step,
     void *_root_table,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t real_count, real_step, twiddle_count, jump;
@@ -93,13 +208,13 @@ void m_layer_CT_ibutterfly(
 
     for(size_t i = 0; i < layers; i++){
 
-        twiddle_count = 1 << i;
+        twiddle_count = 1u << i;
 
-        real_count = 1 << (layers - 1 - i);
+        real_count = 1u << (layers - 1 - i);
 
         jump = step << (i + 1);
 
-        real_root_table = _root_table + ((1 << i) - 1) * ring.sizeZ;
+        real_root_table = _root_table + ((1u << i) - 1) * ring.sizeZ;
 
         real_step = step << i;
 
@@ -119,13 +234,12 @@ void m_layer_CT_ibutterfly(
 }
 
 // ================================
-// multi-layer Gentleman-Sande butterfly for the inverse transformation
-
+// Multi-layer Gentleman-Sande butterfly for the inverse transformation.
 void m_layer_GS_ibutterfly(
     void *src,
     size_t layers, size_t step,
     void *_root_table,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t real_count, real_step, twiddle_count, jump;
@@ -133,13 +247,13 @@ void m_layer_GS_ibutterfly(
 
     for(ssize_t i = layers - 1; i >= 0; i--){
 
-        twiddle_count = 1 << i;
+        twiddle_count = 1u << i;
 
-        real_count = 1 << (layers - 1 - i);
+        real_count = 1u << (layers - 1 - i);
 
         jump = step << (layers - i);
 
-        real_root_table = _root_table + ((1 << i) - 1) * ring.sizeZ;
+        real_root_table = _root_table + ((1u << i) - 1) * ring.sizeZ;
 
         real_step = step << (layers - 1 - i);
 
@@ -159,15 +273,14 @@ void m_layer_GS_ibutterfly(
 }
 
 // ================================
-// NTT with Cooley-Tukey butterfly
-// we must use m_layer_CT_butterfly here
-
+// NTT with Cooley-Tukey butterfly.
+// We must use m_layer_CT_butterfly here.
 void compressed_CT_NTT(
     void *src,
     size_t start_level, size_t end_level,
     void *_root_table,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t step, offset;
@@ -193,9 +306,9 @@ void compressed_CT_NTT(
 
         offset = 0;
 
-        real_root_table = _root_table + ((1 << level) - 1) * ring.sizeZ;
+        real_root_table = _root_table + ((1u << level) - 1) * ring.sizeZ;
 
-        for(size_t count = 0; count < (1 << level); count++){
+        for(size_t count = 0; count < (1u << level); count++){
 
             for(size_t i = 0; i < step; i++){
                 m_layer_CT_butterfly(
@@ -208,7 +321,7 @@ void compressed_CT_NTT(
 
             offset += _profile.array_n >> level;
 
-            real_root_table += ((1 << (*level_indx)) - 1) * ring.sizeZ;
+            real_root_table += ((1u << (*level_indx)) - 1) * ring.sizeZ;
 
         }
 
@@ -217,15 +330,14 @@ void compressed_CT_NTT(
 }
 
 // ================================
-// iNTT with Cooley-Tukey butterfly
-// we must use m_layer_CT_ibutterfly here
-
+// iNTT with Cooley-Tukey butterfly.
+// We must use m_layer_CT_ibutterfly here.
 void compressed_CT_iNTT(
     void *src,
     size_t start_level, size_t end_level,
     void *_root_table,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t step, offset;
@@ -243,7 +355,7 @@ void compressed_CT_iNTT(
         real_end_level += (_profile.merged_layers)[i];
     }
 
-    real_root_table = _root_table + ((1 << real_start_level) - 1) * ring.sizeZ;
+    real_root_table = _root_table + ((1u << real_start_level) - 1) * ring.sizeZ;
 
     level_indx = (_profile.merged_layers) + start_level;
 
@@ -251,7 +363,7 @@ void compressed_CT_iNTT(
 
         step = (_profile.array_n >> _profile.log_ntt_n) << level;
 
-        for(size_t count = 0; count < (1 << level); count++){
+        for(size_t count = 0; count < (1u << level); count++){
 
             offset = count * (_profile.array_n >> _profile.log_ntt_n);
 
@@ -270,7 +382,7 @@ void compressed_CT_iNTT(
 
             }
 
-            real_root_table += ((1 << (*level_indx)) - 1) * ring.sizeZ;
+            real_root_table += ((1u << (*level_indx)) - 1) * ring.sizeZ;
 
         }
 
@@ -278,12 +390,15 @@ void compressed_CT_iNTT(
 
 }
 
-void compressed_GS_NTT(
+// ================================
+// iNTT with Gentleman-Sande butterfly.
+// We must use m_layer_GS_ibutterfly here.
+void compressed_GS_iNTT(
     void *src,
     size_t start_level, size_t end_level,
     void *_root_table,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t step, offset;
@@ -309,9 +424,9 @@ void compressed_GS_NTT(
 
         offset = 0;
 
-        real_root_table = _root_table + ((1 << level) - 1) * ring.sizeZ;
+        real_root_table = _root_table + ((1u << level) - 1) * ring.sizeZ;
 
-        for(size_t count = 0; count < (1 << level); count++){
+        for(size_t count = 0; count < (1u << level); count++){
 
             for(size_t i = 0; i < step; i++){
                 m_layer_GS_ibutterfly(
@@ -324,7 +439,7 @@ void compressed_GS_NTT(
 
             offset += _profile.array_n >> level;
 
-            real_root_table += ((1 << (*level_indx)) - 1) * ring.sizeZ;
+            real_root_table += ((1u << (*level_indx)) - 1) * ring.sizeZ;
 
         }
 

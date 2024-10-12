@@ -1,25 +1,18 @@
-#include <stdlib.h>
+
 #include <memory.h>
+#include <sys/types.h>
 
 #include "tools.h"
 #include "gen_table.h"
 
 // ================================
-// functions in this file can be more generic:
-// gen_CT_table and gen_CT_negacyclic_table can be merged
-// as generating DWT tables
-// gen_streamlined_CT_table and gen_streamlined_CT_negacyclic_table
-// can also be merged as streamlined generation for DWT tables
-// these are left for future work
 
-// ================================
-// generate twiddle factors for cyclic NTT with Cooley-Tukey butterflies
-
+// Generate twiddle factors for cyclic NTT with Cooley-Tukey butterflies.
 void gen_CT_table(
     void *des,
     void *scale, void *omega,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char zeta[ring.sizeZ];
@@ -39,13 +32,12 @@ void gen_CT_table(
 
 }
 
-// ================================
-
+// Generate twiddle factors for DWT with Cooley-Tukey butterflies.
 void gen_DWT_table(
     void *des,
     void *scale, void *omega, void *zeta,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char buff[_profile.ntt_n * ring.sizeZ];
@@ -70,14 +62,12 @@ void gen_DWT_table(
 
 }
 
-// ================================
-// generate twiddle factors for cyclic iNTT with Cooley-Tukey butterflies
-
+// Generate twiddle factors for cyclic iNTT with Cooley-Tukey butterflies.
 void gen_inv_CT_table(
     void *des,
     void *scale, void *omega,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char zeta[ring.sizeZ];
@@ -96,14 +86,14 @@ void gen_inv_CT_table(
 }
 
 // ================================
-// generate twiddle factors for negacyclic NTT with Cooley-Tukey butterflies
-// the table is re-ordered according to _profile
 
+// Generate twiddle factors for DWT with Cooley-Tukey butterflies.
+// The table is re-ordered according to _profile.
 void gen_streamlined_DWT_table(
     void *des,
     void *scale, void *omega, void *zeta,
     struct compress_profile _profile, bool pad,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     size_t start_level;
@@ -142,15 +132,13 @@ void gen_streamlined_DWT_table(
 
 }
 
-// ================================
-// generate twiddle factors for cyclic iNTT with Cooley-Tukey butterflies
-// the table is re-ordered according to _profile
-
+// Generate twiddle factors for cyclic iNTT with Cooley-Tukey butterflies.
+// The table is re-ordered according to _profile.
 void gen_streamlined_inv_CT_table(
     void *des,
     void *scale, void *omega,
     struct compress_profile _profile, bool pad,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char zeta[ring.sizeZ];
@@ -195,13 +183,13 @@ void gen_streamlined_inv_CT_table(
 }
 
 // ================================
-// generate twiddle factors for twisting (x^_profile.ntt_n - omega^_profile.ntt_n) to (x^_profile.ntt_n - 1)
 
+// Generate twiddle factors for twisting (x^NTT_N - omega^NTT_N) to (x^NTT_N - 1).
 void gen_twist_table(
     void *des,
     void *scale, void *omega,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char zeta[ring.sizeZ];
@@ -219,14 +207,13 @@ void gen_twist_table(
 }
 
 // ================================
-// generate twiddle factors for multiplication in
-// x^(ARRAY_N / _profile.ntt_n) +- omega^i
 
+// Generate twiddle factors for multiplication in x^(ARRAY_N / NTT_N) +- omega^i.
 void gen_mul_table(
     void *des,
     void *scale, void *omega,
     struct compress_profile _profile,
-    struct commutative_ring ring
+    struct ring ring
     ){
 
     char zeta[ring.sizeZ];

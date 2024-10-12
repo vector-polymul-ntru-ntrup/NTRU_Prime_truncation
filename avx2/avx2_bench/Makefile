@@ -1,18 +1,22 @@
 
 CC = gcc
 
-CFLAGS += -mcpu=native -mtune=native -O3 -Wall -mavx2 -z noexecstack
+CFLAGS += -mcpu=native -mtune=native -O3 -Wall
+AVXFLAGS = -mavx2 -z noexecstack
 
 COMMON_PATH = ../../common
 
 CFLAGS += -I$(COMMON_PATH)
 
-COMMON_SOURCE = $(COMMON_PATH)/tools.c $(COMMON_PATH)/naive_mult.c $(COMMON_PATH)/gen_table.c $(COMMON_PATH)/ntt_c.c
+COMMON_HEADERs = $(COMMON_PATH)/tools.h $(COMMON_PATH)/naive_mult.h $(COMMON_PATH)/gen_table.h $(COMMON_PATH)/ntt_c.h
+COMMON_SOURCEs = $(COMMON_PATH)/tools.c $(COMMON_PATH)/naive_mult.c $(COMMON_PATH)/gen_table.c $(COMMON_PATH)/ntt_c.c
 
-C_HEADERs = params.h NTT_params.h ring.h \
+GEN_HEADERs = ring.h ring.c gen_const.h gen_const.c __avx2_const.h __avx2_const.c
+GEN_SOURCEs = ring.c gen_const.c __avx2_const.c
+
+C_HEADERs = params.h NTT_params.h \
 		 	__avx2.h __avx2_wrap.h __avx2_mulmod.h
-C_SOURCEs = ring.c \
-			__avx2_const.c __avx2.c
+C_SOURCEs = __avx2_const.c __avx2.c
 ASM_HEADERs = basemul_core.inc
 ASM_SOURCEs = radix_3x2.S basemul.S rader17.S
 
@@ -24,19 +28,19 @@ all: test
 bench: bench_mulcore bench_polymul microbench
 
 test: test.c $(HEADERs) $(SOURCEs)
-	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
+	$(CC) $(CFLAGS) $(AVXFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
 
-gen: gen.c $(HEADERs) gen_const.h $(SOURCEs)
-	$(CC) $(CFLAGS) $(SOURCEs) gen_const.c -o $@ $(addsuffix .c, $@)
+gen: gen.c $(GEN_HEADERs) $(GEN_SOURCEs) $(COMMON_HEADERs) $(COMMON_SOURCEs)
+	$(CC) $(CFLAGS) $(GEN_SOURCEs) $(COMMON_SOURCEs) -o $@ $(addsuffix .c, $@)
 
 bench_mulcore: bench_mulcore.c $(HEADERs) $(SOURCEs)
-	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
+	$(CC) $(CFLAGS) $(AVXFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
 
 bench_polymul: bench_polymul.c $(HEADERs) $(SOURCEs)
-	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
+	$(CC) $(CFLAGS) $(AVXFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
 
 microbench: microbench.c $(HEADERs) $(SOURCEs)
-	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
+	$(CC) $(CFLAGS) $(AVXFLAGS) $(SOURCEs) -o $@ $(addsuffix .c, $@)
 
 .PHONY: clean
 clean:

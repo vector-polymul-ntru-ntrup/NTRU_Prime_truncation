@@ -8,13 +8,13 @@
 
 extern int16_t mod;
 
-void memberZ(void *des, void *src);
-void addZ(void *des, void *src1, void *src2);
-void subZ(void *des, void *src1, void *src2);
-void mulZ(void *des, void *src1, void *src2);
-void expZ(void *des, void *src, size_t e);
+void memberZ(void *des, const void *src);
+void addZ(void *des, const void *src1, const void *src2);
+void subZ(void *des, const void *src1, const void *src2);
+void mulZ(void *des, const void *src1, const void *src2);
+void expZ(void *des, const void *src, const size_t e);
 
-extern struct commutative_ring coeff_ring;
+extern struct ring coeff_ring;
 
 void getExpVec(int16_t *des, int16_t w, size_t len);
 void DFT(int16_t *des, int16_t *src, int16_t *w_exp, size_t len, size_t jump);

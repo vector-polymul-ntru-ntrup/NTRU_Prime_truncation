@@ -1,8 +1,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
-#include <memory.h>
 
 #include "tools.h"
 #include "naive_mult.h"
