@@ -17,7 +17,7 @@ C_SOURCEs = ring.c rader.c
 HEADERs = $(ASM_HEADERs) $(C_HEADERs)
 SOURCEs = $(ASM_SOURCEs) $(COMMON_SOURCE) $(C_SOURCEs)
 
-all: test
+all: test gen
 
 test: test.c $(HEADERs) $(SOURCEs)
 	$(CC) $(CFLAGS) $(SOURCEs) -o $@ $<

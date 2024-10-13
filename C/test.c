@@ -167,6 +167,7 @@ int main(void){
     }
 
     for(size_t i = 0; i < 1536; i += 96){
+
         twiddle = 1;
         naive_mulR(res_NTT + i + 0 * 16, poly1_NTT + i + 0 * 16, poly2_NTT + i + 0 * 16, 16, &twiddle, coeff_ring);
         naive_mulR(res_NTT + i + 2 * 16, poly1_NTT + i + 2 * 16, poly2_NTT + i + 2 * 16, 16, &twiddle, coeff_ring);

@@ -9,7 +9,7 @@
 #include "NTT_params.h"
 
 // map x to log_g x
-size_t rader_dlog_permute[17] = {
+size_t rader_dlog_permute[16] = {
 0, 14, 1, 12,
 5, 15, 11, 10,
 2, 3, 7, 13,
@@ -76,7 +76,7 @@ void partial_cyclic_GS(int16_t *des, const int16_t *src){
     }
 }
 
-// out-of-place
+// in-place
 void partial_cyclic_negacyclic_mul(int16_t *des, const int16_t *src1, const int16_t *src2){
 
     int16_t twiddle = -1;
@@ -89,6 +89,7 @@ void partial_cyclic_negacyclic_mul(int16_t *des, const int16_t *src1, const int1
 
 }
 
+// in-place
 void partial_scale(int16_t *des, const int16_t *src){
     int16_t scale;
     for(size_t i = 0; i < 2; i++){
@@ -108,46 +109,55 @@ void partial_scale(int16_t *des, const int16_t *src){
     }
 }
 
+// in-place
+void partial_final_scale(int16_t *des, const int16_t *src){
+    int16_t scale = INV16;
+    for(size_t i = 0; i < 16; i++){
+        coeff_ring.mulZ(des + i, src + i, &scale);
+    }
+}
+
+// in-place
 void cyclic_mul_partial_CT_GS(int16_t *des, const int16_t *src1, const int16_t *src2){
 
     int16_t buff1[16], buff2[16];
-    int16_t scale;
 
     partial_cyclic_CT(buff1, src1);
     partial_cyclic_CT(buff2, src2);
     partial_cyclic_negacyclic_mul(des, buff1, buff2);
     partial_scale(des, des);
     partial_cyclic_GS(des, des);
-
-    scale = INV16;
-    for(size_t i = 0; i < 16; i++){
-        coeff_ring.mulZ(des + i, des + i, &scale);
-    }
+    partial_final_scale(des, des);
 
 }
 
 void rader_17_primitive(int16_t *des, int16_t *src, int16_t *twiddle_table, int16_t *twiddle_inv_table, size_t jump){
 
-    int16_t buff[16];
     int16_t twiddle_permuted[16];
-    int16_t src_permute[16];
-
-    int16_t twiddle;
+    int16_t src_permuted[16];
 
     for(size_t i = 0; i < 16; i++){
-        src_permute[(16 - rader_dlog_permute[i]) % 16] = src[i * jump];
+        src_permuted[(16 - rader_dlog_permute[i]) % 16] = src[i * jump];
     }
 
+    // We can precompute the following for the twiddle factors.
     rader_17_primitive_twiddle_permute(twiddle_permuted, twiddle_table);
+    partial_cyclic_CT(twiddle_permuted, twiddle_permuted);
+    partial_scale(twiddle_permuted, twiddle_permuted);
 
-    cyclic_mul_partial_CT_GS(buff, src_permute, twiddle_permuted);
+    partial_cyclic_CT(src_permuted, src_permuted);
+    partial_cyclic_negacyclic_mul(src_permuted, src_permuted, twiddle_permuted);
+    partial_cyclic_GS(src_permuted, src_permuted);
+    // This scaling can be postponed.
+    partial_final_scale(src_permuted, src_permuted);
 
     rader_17_primitive_twiddle_permute(twiddle_permuted, twiddle_inv_table);
 
-    point_mul(buff, buff, twiddle_permuted, 16, 1, coeff_ring);
+    // This point_mul can be merged with twisting.
+    point_mul(src_permuted, src_permuted, twiddle_permuted, 16, 1, coeff_ring);
 
     for(size_t i = 0; i < 16; i++){
-        des[i * jump] = buff[rader_dlog_permute[i]];
+        des[i * jump] = src_permuted[rader_dlog_permute[i]];
     }
 
 }
@@ -155,25 +165,30 @@ void rader_17_primitive(int16_t *des, int16_t *src, int16_t *twiddle_table, int1
 void rader_17_primitive_inv(int16_t *des, int16_t *src, int16_t *twiddle_inv_table, int16_t *twiddle_table, size_t jump){
 
     int16_t twiddle_permuted[16];
-    int16_t src_permute[16];
-
-    int16_t twiddle;
+    int16_t src_permuted[16];
 
     for(size_t i = 0; i < 16; i++){
-        src_permute[rader_dlog_permute[i]] = src[i * jump];
+        src_permuted[rader_dlog_permute[i]] = src[i * jump];
     }
 
     rader_17_primitive_twiddle_permute(twiddle_permuted, twiddle_table);
 
-    point_mul(src_permute, src_permute, twiddle_permuted, 16, 1, coeff_ring);
+    // This point_mul can be merged with twisting.
+    point_mul(src_permuted, src_permuted, twiddle_permuted, 16, 1, coeff_ring);
 
+    // We can precompute the following for the twiddle factors.
     rader_17_primitive_inv_twiddle_permute(twiddle_permuted, twiddle_inv_table);
+    partial_cyclic_CT(twiddle_permuted, twiddle_permuted);
+    partial_scale(twiddle_permuted, twiddle_permuted);
 
-    twiddle = 1;
-    naive_mulR(src_permute, src_permute, twiddle_permuted, 16, &twiddle, coeff_ring);
+    partial_cyclic_CT(src_permuted, src_permuted);
+    partial_cyclic_negacyclic_mul(src_permuted, src_permuted, twiddle_permuted);
+    partial_cyclic_GS(src_permuted, src_permuted);
+    // This scaling can be postponed.
+    partial_final_scale(src_permuted, src_permuted);
 
     for(size_t i = 0; i < 16; i++){
-        des[i * jump] = src_permute[(16 - rader_dlog_permute[i] - 1) % 16];
+        des[i * jump] = src_permuted[(16 - rader_dlog_permute[i] - 1) % 16];
     }
 
 

@@ -6,14 +6,24 @@
 
 // g = 3
 // map x to g^x
-extern size_t rader_in_permute[17];
-// map x to g^{16 - x}
-extern size_t rader_out_permute[17];
+// extern size_t rader_in_permute[17];
+// // map x to g^{16 - x}
+// extern size_t rader_out_permute[17];
 
-extern size_t rader_dlog_permute[17];
+extern size_t rader_dlog_permute[16];
 
-extern int16_t const_twiddle17[17];
-extern int16_t const_twiddle17inv[17];
+// in-place
+void partial_cyclic_CT(int16_t *des, const int16_t *src);
+// in-place
+void partial_cyclic_GS(int16_t *des, const int16_t *src);
+// in-place
+void partial_cyclic_negacyclic_mul(int16_t *des, const int16_t *src1, const int16_t *src2);
+// in-place
+void partial_scale(int16_t *des, const int16_t *src);
+// in-place
+void partial_final_scale(int16_t *des, const int16_t *src);
+// in-place
+void cyclic_mul_partial_CT_GS(int16_t *des, const int16_t *src1, const int16_t *src2);
 
 void rader_17(int16_t *des, int16_t *src, int16_t *twiddle_table, size_t jump);
 
