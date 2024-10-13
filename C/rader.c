@@ -1,6 +1,4 @@
 
-#include <stdio.h>
-
 #include "rader.h"
 
 #include "naive_mult.h"
@@ -36,10 +34,11 @@ void rader_17_primitive_inv_twiddle_permute(int16_t *des, const int16_t *src){
 
 }
 
+// in-place
 void add_sub(int16_t *a, int16_t *b){
     int16_t t = *a;
-    *a = t + *b;
-    *b = t - *b;
+    coeff_ring.addZ(a, &t, b);
+    coeff_ring.subZ(b, &t, b);
 }
 
 // in-place

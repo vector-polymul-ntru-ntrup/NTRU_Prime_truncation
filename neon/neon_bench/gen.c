@@ -123,10 +123,8 @@ int main(void){
 
     int16_t twiddle17[17];
     int16_t twiddle_buff[128];
-    int16_t twiddle_more_buff[128];
     int16_t twist[16 * 96];
     int16_t twist_extended[2 * 16 * 96];
-    int16_t buff16[16];
     int16_t twiddle, t, omega;
 
 // ================
@@ -135,20 +133,15 @@ int main(void){
     getExpVec(twiddle17, omega, 17);
     assert(memcmp(twiddle_rader17, twiddle17, 17 * sizeof(int16_t)) == 0);
 
-    for(size_t i = 0; i < 16; i++){
-        twiddle_buff[rader_dlog_permute[i]] = twiddle_rader17[i + 1];
-    }
+    rader_17_primitive_twiddle_permute(twiddle_buff, twiddle_rader17);
+
     for(size_t i = 0; i < 8; i++){
-        coeff_ring.addZ(buff16 + 0 + i, twiddle_buff + 0 + i, twiddle_buff + 8 + i);
-        coeff_ring.subZ(buff16 + 8 + i, twiddle_buff + 0 + i, twiddle_buff + 8 + i);
+        add_sub(twiddle_buff + i + 0, twiddle_buff + i + 8);
     }
-    memmove(twiddle_buff, buff16, 16 * sizeof(int16_t));
     for(size_t i = 0; i < 4; i++){
-        coeff_ring.addZ(buff16 + 0 + i, twiddle_buff + 0 + i, twiddle_buff + 4 + i);
-        coeff_ring.subZ(buff16 + 4 + i, twiddle_buff + 0 + i, twiddle_buff + 4 + i);
+        add_sub(twiddle_buff + i + 0, twiddle_buff + i + 4);
     }
-    memmove(buff16 + 8, twiddle_buff + 8, 8 * sizeof(int16_t));
-    assert(memcmp(twiddle_rader17_permuted, buff16, 16 * sizeof(int16_t)) == 0);
+    assert(memcmp(twiddle_rader17_permuted, twiddle_buff, 16 * sizeof(int16_t)) == 0);
 
 // ================
 
@@ -162,26 +155,17 @@ int main(void){
     }
     assert(memcmp(twiddle_inv_rader17, twiddle17, 17 * sizeof(int16_t)) == 0);
 
-    for(size_t i = 0; i < 16; i++){
-        twiddle_more_buff[rader_dlog_permute[i]] = twiddle_inv_rader17[i + 1];
-    }
+    rader_17_primitive_inv_twiddle_permute(twiddle_buff, twiddle_inv_rader17);
+
     for(size_t i = 0; i < 8; i++){
-        twiddle_buff[i] = twiddle_more_buff[7 - i];
+        add_sub(twiddle_buff + i + 0, twiddle_buff + i + 8);
     }
-    for(size_t i = 8; i < 16; i++){
-        twiddle_buff[i] = twiddle_more_buff[23 - i];
-    }
-    for(size_t i = 0; i < 8; i++){
-        coeff_ring.addZ(buff16 + 0 + i, twiddle_buff + 0 + i, twiddle_buff + 8 + i);
-        coeff_ring.subZ(buff16 + 8 + i, twiddle_buff + 0 + i, twiddle_buff + 8 + i);
-    }
-    memmove(twiddle_buff, buff16, 16 * sizeof(int16_t));
     for(size_t i = 0; i < 4; i++){
-        coeff_ring.addZ(buff16 + 0 + i, twiddle_buff + 0 + i, twiddle_buff + 4 + i);
-        coeff_ring.subZ(buff16 + 4 + i, twiddle_buff + 0 + i, twiddle_buff + 4 + i);
+        add_sub(twiddle_buff + i + 0, twiddle_buff + i + 4);
     }
-    memmove(buff16 + 8, twiddle_buff + 8, 8 * sizeof(int16_t));
-    assert(memcmp(twiddle_irader17_permuted, buff16, 16 * sizeof(int16_t)) == 0);
+
+    assert(memcmp(twiddle_irader17_permuted, twiddle_buff, 16 * sizeof(int16_t)) == 0);
+
 
 // ================
 

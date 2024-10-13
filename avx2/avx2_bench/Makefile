@@ -11,8 +11,8 @@ CFLAGS += -I$(COMMON_PATH)
 COMMON_HEADERs = $(COMMON_PATH)/tools.h $(COMMON_PATH)/naive_mult.h $(COMMON_PATH)/gen_table.h $(COMMON_PATH)/ntt_c.h
 COMMON_SOURCEs = $(COMMON_PATH)/tools.c $(COMMON_PATH)/naive_mult.c $(COMMON_PATH)/gen_table.c $(COMMON_PATH)/ntt_c.c
 
-GEN_HEADERs = ring.h ring.c gen_const.h gen_const.c __avx2_const.h __avx2_const.c
-GEN_SOURCEs = ring.c gen_const.c __avx2_const.c
+GEN_HEADERs = ring.h __avx2_const.h rader.h
+GEN_SOURCEs = ring.c __avx2_const.c rader.c
 
 C_HEADERs = params.h NTT_params.h \
 		 	__avx2.h __avx2_wrap.h __avx2_mulmod.h

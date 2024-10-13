@@ -15,9 +15,47 @@
 #include "__avx2.h"
 #include "__avx2_const.h"
 
-#include "gen_const.h"
+#include "rader.h"
 
 int16_t twist[NTT_N];
+
+int16_t twiddle_rader17[17] = {
+1, 1152, 305, -2147, 1205, 1678, 245, 2189, 1269, 1950, 1401, -2080, 342, -842, -1283, 286, -1080
+};
+
+int16_t twiddle_rader17_inv[17] = {
+1, -1080, 286, -1283, -842, 342, -2080, 1401, 1950, 1269, 2189, 245, 1678, 1205, -2147, 305, 1152
+};
+
+int16_t twiddle_inv_rader17[17] = {
+0, 1151, 304, -2148, 1204, 1677, 244, 2188, 1268, 1949, 1400, -2081, 341, -843, -1284, 285, -1081
+};
+
+int16_t id16[16] = {
+1, 1, 1, 1,
+1, 1, 1, 1,
+1, 1, 1, 1,
+1, 1, 1, 1
+};
+
+int16_t _3x2_table[6] = {
+1, -OMEGA3, OMEGA3INV,
+-1, OMEGA3, -OMEGA3INV
+};
+
+int16_t twist16[16] = {
+1, OMEGA3, OMEGA3INV, 1,
+OMEGA3, OMEGA3INV, 1, OMEGA3,
+OMEGA3INV, 1, OMEGA3, OMEGA3INV,
+1, OMEGA3, OMEGA3INV, 1
+};
+
+int16_t twist16inv[16] = {
+1, OMEGA3INV, OMEGA3, 1,
+OMEGA3INV, OMEGA3, 1, OMEGA3INV,
+OMEGA3, 1, OMEGA3INV, OMEGA3,
+1, OMEGA3INV, OMEGA3, 1
+};
 
 void print_int16(int16_t *src, size_t len){
 
@@ -31,7 +69,6 @@ int main(void){
 
     int16_t twiddle17[17];
     int16_t twiddle_buff[16];
-    int16_t twiddle_tmp[16];
     int16_t twiddlex16[16 * 16];
     int16_t twiddle, t, scale, omega;
 
@@ -53,48 +90,10 @@ int main(void){
 
 // ================
 
-    for(size_t i = 0; i < 16; i++){
-        twiddle_buff[rader_dlog_permute[i]] = twiddle_rader17[i + 1];
-    }
+    rader_17_primitive_twiddle_permute(twiddle_buff, twiddle_rader17);
 
-    for(size_t i = 0; i < 8; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 8);
-        coeff_ring.subZ(twiddle_tmp + i + 8, twiddle_buff + i + 0, twiddle_buff + i + 8);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 16 * sizeof(int16_t));
-
-    for(size_t i = 0; i < 4; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 4);
-        coeff_ring.subZ(twiddle_tmp + i + 4, twiddle_buff + i + 0, twiddle_buff + i + 4);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 8 * sizeof(int16_t));
-
-    for(size_t i = 0; i < 2; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 2);
-        coeff_ring.subZ(twiddle_tmp + i + 2, twiddle_buff + i + 0, twiddle_buff + i + 2);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 4 * sizeof(int16_t));
-
-    for(size_t i = 0; i < 1; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 1);
-        coeff_ring.subZ(twiddle_tmp + i + 1, twiddle_buff + i + 0, twiddle_buff + i + 1);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 2 * sizeof(int16_t));
-
-    scale = 2;
-    for(size_t i = 2; i < 4; i++){
-        coeff_ring.mulZ(twiddle_buff + i, twiddle_buff + i, &scale);
-    }
-
-    scale = 4;
-    for(size_t i = 4; i < 8; i++){
-        coeff_ring.mulZ(twiddle_buff + i, twiddle_buff + i, &scale);
-    }
-
-    scale = 8;
-    for(size_t i = 8; i < 16; i++){
-        coeff_ring.mulZ(twiddle_buff + i, twiddle_buff + i, &scale);
-    }
+    partial_cyclic_CT(twiddle_buff, twiddle_buff);
+    partial_scale(twiddle_buff, twiddle_buff);
 
     for(size_t i = 0; i < 16; i++){
         for(size_t j = 0; j < 16; j++){
@@ -119,48 +118,10 @@ int main(void){
 
 // ================
 
-    for(size_t i = 0; i < 16; i++){
-        twiddle_buff[(23 - rader_dlog_permute[i]) % 16] = twiddle_inv_rader17[i + 1];
-    }
+    rader_17_primitive_inv_twiddle_permute(twiddle_buff, twiddle_inv_rader17);
 
-    for(size_t i = 0; i < 8; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 8);
-        coeff_ring.subZ(twiddle_tmp + i + 8, twiddle_buff + i + 0, twiddle_buff + i + 8);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 16 * sizeof(int16_t));
-
-    for(size_t i = 0; i < 4; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 4);
-        coeff_ring.subZ(twiddle_tmp + i + 4, twiddle_buff + i + 0, twiddle_buff + i + 4);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 8 * sizeof(int16_t));
-
-    for(size_t i = 0; i < 2; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 2);
-        coeff_ring.subZ(twiddle_tmp + i + 2, twiddle_buff + i + 0, twiddle_buff + i + 2);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 4 * sizeof(int16_t));
-
-    for(size_t i = 0; i < 1; i++){
-        coeff_ring.addZ(twiddle_tmp + i + 0, twiddle_buff + i + 0, twiddle_buff + i + 1);
-        coeff_ring.subZ(twiddle_tmp + i + 1, twiddle_buff + i + 0, twiddle_buff + i + 1);
-    }
-    memmove(twiddle_buff, twiddle_tmp, 2 * sizeof(int16_t));
-
-    scale = 2;
-    for(size_t i = 2; i < 4; i++){
-        coeff_ring.mulZ(twiddle_buff + i, twiddle_buff + i, &scale);
-    }
-
-    scale = 4;
-    for(size_t i = 4; i < 8; i++){
-        coeff_ring.mulZ(twiddle_buff + i, twiddle_buff + i, &scale);
-    }
-
-    scale = 8;
-    for(size_t i = 8; i < 16; i++){
-        coeff_ring.mulZ(twiddle_buff + i, twiddle_buff + i, &scale);
-    }
+    partial_cyclic_CT(twiddle_buff, twiddle_buff);
+    partial_scale(twiddle_buff, twiddle_buff);
 
     for(size_t i = 0; i < 16; i++){
         for(size_t j = 0; j < 16; j++){
@@ -174,7 +135,6 @@ int main(void){
     for(size_t i = 0; i < 16; i++){
         twiddle_buff[i] = twiddle_buff[i] * scale;
     }
-
 
     for(size_t i = 0; i < 16; i++){
         for(size_t j = 0; j < 16; j++){
